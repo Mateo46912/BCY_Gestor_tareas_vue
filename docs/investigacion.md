@@ -321,3 +321,143 @@ Después de estos cambios la página web se mostró tal cual se deseaba y el eje
 
 [Documentación oficial de Vue — Renderizado de listas](https://vuejs.org/guide/essentials/list.html)
 
+# Bloque 5: Rutas y API
+
+## Vue Router (Enrutador)
+
+### ¿Qué es?
+
+Un enrutador es básicamente un sistema que ayuda a gestionar la navegación entre páginas o vistas según la URL, esto ya se podía hacer con HTML normal sin Vue, pero Vue nos da la herramienta Vue Router, la cual permite crear un archivo que va a relacionar la URL con un componente en específico.
+
+De esta forma no debemos cargar varias veces un archivo HTML, sino que cargamos el HTML principal y con Vue Router podemos cambiar entre varias páginas en las que cada página es un componente.
+
+### ¿Para qué sirve?
+
+Sirve para organizar mejor la página web, evitar tener varios archivos HTML y tener una organización de los enlaces con su contenido respectivo, de esta manera podemos implementar mucho mejor nuestra página web.
+
+## Consumo de API REST con `fetch()`
+
+### ¿Qué es?
+
+Una API REST es básicamente una API que sigue un estilo de arquitectura llamado REST. La API en sí es la encargada de permitir la comunicación entre diferentes sistemas; en nuestro caso, el backend con el frontend. REST es un estilo o estructura que se le da a la API, que normalmente utiliza HTTP y sus diferentes métodos.
+
+Después, `fetch()` es una funcionalidad de JavaScript que nos permite hacer solicitudes al backend mediante la API. Podemos enviar o recibir datos.
+
+Consumir una API REST con `fetch()` es eso, usar `fetch()` para solicitar algo al backend y mediante la API obtener esos resultados que buscamos.
+
+### ¿Para qué sirve?
+
+Esto sirve para poder enviar u obtener datos de un backend que puede estar conectado con una base de datos o para utilizar funcionalidades que proporciona ese backend.
+
+## Manejo de errores y estados de carga
+
+### ¿Qué es?
+
+El manejo de errores es básicamente eso, controlar los errores, al momento de hacer un `fetch()` puede que el servidor responda o no, o que exista una falla de red o cualquier error. Para ello usamos `try/catch`, así le podemos informar al usuario el estado de su solicitud.
+
+De esta forma, él no verá en su pantalla errores raros o palabras que no entienda, sino que verá un mensaje claro.
+
+Estados de carga es básicamente mostrarle al usuario una imagen o texto que le indique que su solicitud está cargando, así si el servidor tarda varios segundos, él no piensa que hizo algo mal, sino que está cargando.
+
+### ¿Para qué sirve?
+
+Las dos sirven para mejorar la experiencia del usuario y la estabilidad de la app en el caso de los errores. De esta forma hacemos que el usuario entienda qué está pasando.
+
+## Ejemplo práctico: Consultar tareas usando VUE router y API REST
+
+Para aplicar los tres conceptos vistos anteriormente, se desarrollo una app para listar las tareas desde un JSON ya sea la lista completa o por el id de la tarea.
+
+Usamos JSON Server, este nos permite crear una API REST local a partir de un archivo `db.json`, donde se almacenaron las tres tareas con su ID, título y estado.
+
+Para este ejemplo se utilizaron 2 rutas: `/tareas`, que muestra todas las tareas, y `/tareas/:id`, que muestra la información de una tarea segun su ID
+
+Las consultas se hicieron usando `fetch()` y se implemento manejo de errores y estados de carga, aplicando así todos los conceptos del bloque 5.
+
+### Configuración de Vue Router
+
+Primero se configuró el archivo `router/index.js`, en donde se crearon las rutas, relacionando URL con el componente necesario.
+
+La ruta `/tareas` utiliza el componente `ListaTareas.vue`, mientras que la ruta `/tareas/:id` utiliza `DetalleTarea.vue`.
+
+Asi si el usuario le da click al link `ver detalle` le mostrara la tarea especifica, Vue Router permitira cambiar de vista y utilizar el ID de la tarea seleccionada.
+
+![Configuración de las rutas de Vue Router](capturas/Evidencia_Rutas.png)
+
+### Consumo de la API REST con fetch()
+
+Para crear la API REST se utilizó JSON Server con el archivo `db.json`, en donde se guardaron las tareas para este ejemplo.
+
+Después, en los componentes `ListaTareas.vue` y `DetalleTarea.vue`, se utilizó `fetch()` para hacer las solicitudes a la API.
+
+En `ListaTareas.vue` se consulta la dirección `http://localhost:3000/tareas` para obtener todas las tareas. por otro lado, `DetalleTarea.vue` utiliza el ID recibido desde Vue Router para consultar una tarea en especifico.
+
+Los resultados se almacenan en variables reactivas, permitiendo que Vue muestre la información de forma automatica en el HTML.
+
+**Código de las consultas con fetch():**
+
+![Código de las consultas fetch](capturas/Evidencia_Fetchs.png)
+
+**Evidencia de la API REST funcionando:**
+
+En la siguiente captura se puede observar cómo JSON Server devuelve las tareas almacenadas en el archivo `db.json` que creamos inicialmente.
+
+![API REST con JSON Server](capturas/Evidencia_APi_Json.png)
+
+### Evidencia de funcionamiento de las rutas
+
+**Listado de todas las tareas:**
+
+Al ingresar a `/tareas`, se realiza una solicitud a la API y muestra las tres tareas con su título, estado y un enlace para consultar su detalle.
+
+![Listado de tareas en Vue](capturas/Evidencia_Tareas_cargadas_Web.png)
+
+**Consulta de una tarea por ID:**
+
+Al seleccionar «Ver detalle», Vue Router cambia a una ruta como `/tareas/1`.
+
+En este caso, el componente `DetalleTarea.vue` utiliza `useRoute()` para obtener el ID desde la URL y realizar una nueva solicitud a la API.
+
+Como se ve en la captura, se muestra solo la tarea con ID 1, con todos sus datos almacenados.
+![Detalle de una tarea por ID](capturas/Evidencia_Tarea_Unica_Web.png)
+
+### Manejo de errores y estados de carga
+
+Para aplicar el manejo de errores se utilizó `try/catch/finally` en las partes donde se consulta a la API.
+
+También se comprobó `respuesta.ok` para detectar cuando el servidor devuelve una respuesta HTTP que indica un error.
+
+Asi se valido varios de los posibles errores.
+
+**Evidencia del estado de carga:**
+
+Cuando se realiza una solicitud, la variable `cargando` vale `true`, por lo que Vue muestra el mensaje «Cargando tareas...».
+
+Cuando finaliza la solicitud, el bloque `finally` cambia esta variable a `false`, haciendo que desaparezca el mensaje y se muestren o las tareas o si hay un error pues el error.
+
+Para poder observar este estado se realizó una prueba limitando la velocidad de conexión desde las herramientas de desarrollador del navegador.
+
+![Estado de carga de las tareas](capturas/Evidencia_Estado_carga.png)
+
+**Evidencia del manejo de errores:**
+
+Para comprobar el manejo de errores se ingresó manualmente a la ruta `/tareas/100`, la cual no existe en nuestra API.
+
+Al realizar la solicitud, el servidor devolvió una respuesta de error y nuestro catch mostro el mensaje correspondiente.
+
+Como resultado, la aplicación mostró un mensaje indicando que no se encuentra la tarea
+
+![Manejo de errores en la consulta](capturas/Evidencia_Manejo_Errores.png)
+
+### Errores encontrados y solución
+
+Durante el desarrollo del ejercicio no se presentaron errores importantes a tomar en cuenta o para documentar.
+
+### Fuentes:
+
+[Documentación oficial de Vue Router](https://router.vuejs.org/guide/)
+
+[Documentación de MDN — Fetch API](https://developer.mozilla.org/es/docs/Web/API/Fetch_API/Using_Fetch)
+
+[Documentación de JSON Server](https://github.com/typicode/json-server)
+
+[Documentación oficial de Vue — Renderizado condicional](https://vuejs.org/guide/essentials/conditional.html)

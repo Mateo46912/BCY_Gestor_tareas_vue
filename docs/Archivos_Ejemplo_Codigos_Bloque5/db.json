@@ -1,0 +1,19 @@
+{
+  "tareas": [
+    {
+      "id": "1",
+      "titulo": "Estudiar Vue",
+      "estado": "Pendiente"
+    },
+    {
+      "id": "2",
+      "titulo": "Investigar Pinia",
+      "estado": "Completada"
+    },
+    {
+      "id": "3",
+      "titulo": "Practicar API REST",
+      "estado": "Pendiente"
+    }
+  ]
+}
