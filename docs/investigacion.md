@@ -195,4 +195,129 @@ Vue tiene funciones que nos permiten hacer algo en esos momentos:
 
 Por ahora no necesitamos usar estas funciones, porque trabajaremos con tres tareas de ejemplo y no cargaremos datos desde una API.
 
+# Bloque 4: Estado y reactividad en Vue
+
+## Reactividad y `ref()`
+
+### ¿Qué es?
+
+La reactividad en Vue permite que la interfaz o el HTML que estamos usando, se actualice automáticamente cuando se cambian los datos de una variable que se esté usando. Para esto, Vue proporciona la función `ref()`, la cual permite crear variables o valores reactivos y detectar cuando estos cambien. A diferencia de JavaScript sin Vue, no hace falta actualizar de forma manual los elementos del HTML que se encargan de mostrar los valores de estas variables.
+
+### ¿Para qué sirve?
+
+`ref()` sirve para guardar valores que pueden variar a lo largo de la ejecución, como contadores, datos de formularios o listas. Se usa JavaScript para acceder y modificar el valor de esta `ref` usando `.value`, cuando se hace esto Vue actualiza automáticamente la interfaz para que muestre este nuevo valor de forma automática sin necesidad de hacerlo nosotros usando JavaScript.
+
+### Ejemplo práctico: Cambiar el estado de una tarea
+
+Se desarrolló un componente en Vue llamado `Ejemplo_Ref.vue`, en el cual se creó una variable reactiva `estado_tarea` utilizando `ref()`, con el valor inicial `"Pendiente"`.
+
+Se implementó un botón que ejecuta la función `actualizar_estado_tarea()` mediante el evento `@click`. Esta función usa un `if/else` para alternar el valor de la variable entre `"Pendiente"` y `"Completada"`.
+
+El estado se muestra en el HTML mediante `{{ estado_tarea }}`, se puede observar cómo Vue actualiza el valor en el HTML cada vez que cambia el valor de la variable reactiva, no se necesitó de JavaScript para actualizar la vista de ese valor en el HTML.
+
+### Error que nos pasó y solución
+
+Durante el desarrollo del ejemplo el botón no cambiaba el valor de la variable, esto pasaba porque se usó el operador: `==` en lugar del operador `=` que es el que sirve para asignar valores.
+
+Para solucionar este error, se reemplazó `==` por `=` al cambiar el estado de la variable, esto se hizo consultando a ChatGPT, sobre el porqué el botón no funcionaba y él nos dio feedback de cuál era el problema.
+
+### Código del ejemplo:
+
+![Código de Ejemplo_Ref.vue](capturas/Ejemplo_Ref_Evidencia_Codigo.png)
+
+### Evidencia de funcionamiento:
+
+**Estado inicial de la tarea:**
+
+![Estado pendiente](capturas/Ejemplo_Ref_Evidencia_Web_1.png)
+
+**Estado después de presionar el botón:**
+
+![Estado completado](capturas/Ejemplo_Ref_Evidencia_Web_2.png)
+
+### Fuente:
+
+[Documentación oficial de Vue — Fundamentos de reactividad](https://vuejs.org/guide/essentials/reactivity-fundamentals.html)
+
+## Estado local y global
+
+### ¿Qué es?
+
+El estado local consiste en tener variables, como contadores, listas o datos en sí, pero de manera local por ejemplo que si cambian de valor este cambio solo afecta al componente que los contiene es decir, si un componente tiene un contador y se instancia dos veces este componente, pues el contador de la primera instancia no será el mismo que el de la segunda.
+
+Por otro lado un estado global consiste en que estas variables o listas, son globales es decir si se cambian sus valores todos los elementos u otros componentes que las usen pues se verán reflejados con este valor, es decir compartirán la información.
+
+### ¿Para qué sirve?
+
+El estado local sirve para trabajar con un componente específico en el que queremos que esa variable solo cambie en la instancia del componente que estamos usando.
+
+En cambio el estado global es útil cuando queremos que los cambios en esa variable sean reflejados en los demás componentes que la usen, por ejemplo tenemos un contador que funciona como un reloj, hacemos que cambie su valor para que esta variable se actualice y se use en el reloj de la aplicación y en una variable que usa la hora para calcular algo, básicamente necesitan tener el mismo valor en esa variable y por ello es de estado global.
+
+### Ejemplo práctico
+
+Para demostrar el funcionamiento del estado global, se realizó una práctica utilizando Pinia, en la cual dos componentes diferentes acceden a una misma lista de tareas almacenada en un store.
+
+El primer componente muestra las tareas en su orden original, mientras que el segundo las muestra en orden inverso. De esta manera, ambos utilizan la misma información compartida, pero la presentan de formas diferentes.
+
+El código y las evidencias de esta práctica se encuentran en el siguiente apartado, **Pinia y estado compartido**.
+
+## Pinia y estado compartido
+
+### ¿Qué es?
+
+Pinia es una biblioteca que se importa, básicamente permite aplicar el concepto de estado global que se vio en el punto anterior, nos permite crear una store, que básicamente es el contenedor o como un almacén de estado compartido que va a contener la variable o las variables y también funciones que cambien esa variable.
+
+Después los componentes van a importar una función para poder acceder a la store y poder usar la variable o variables que entregue esta store, además de las funciones que tenga.
+
+### ¿Para qué sirve?
+
+Es muy útil y sirve para poder usar estas variables o arreglos en varios componentes que lo necesiten como el ejemplo del reloj de antes o incluso para la app de gestión de tareas cuando varios componentes necesiten acceder a cada tarea o al arreglo de tareas para cambiar sus propiedades, agregar tareas o eliminarlas.
+
+### Ejemplo práctico: Lista de tareas compartida mediante Pinia
+
+Se desarrolló un ejemplo utilizando Pinia para compartir un arreglo de tareas entre dos componentes diferentes de Vue.
+
+Primero, se creó un store en el archivo `tareas.js`, utilizando `defineStore()` de Pinia y `ref()` de Vue para almacenar una lista de tareas de forma reactiva. Mediante `return { tareas }`, se permite que otros componentes puedan acceder al arreglo.
+
+Después, se crearon dos componentes llamados `Lista_Tareas_Normal.vue` y `Lista_Tareas_Invertida.vue`. Ambos importan la función `usarTareasStore()` para acceder al mismo store.
+
+En el primer componente se utiliza `v-for` para recorrer y mostrar las tareas en su orden original. En el segundo componente se utiliza el mismo arreglo, pero aplicando el método `toReversed()`, que permite mostrar las tareas en orden inverso sin modificar el arreglo original.
+
+De esta forma se demuestra cómo Pinia permite que dos componentes diferentes utilicen la misma información para fines diferentes.
+
+### Código del store de Pinia
+
+En esta captura se muestra el archivo `tareas.js`, donde está la lista compartida.
+
+![Código del store de Pinia](capturas/Evidencia_Pinia_Store_Codigo.png)
+
+### Componentes que utilizan el store
+
+En la siguiente captura se muestran los dos componentes, los cuales acceden al mismo store y utilizan `v-for` para mostrar las tareas en diferente orden.
+
+![Componentes que utilizan el store](capturas/Evidencia_Componentes_Usando_Store.png)
+
+### Evidencia de funcionamiento
+
+Como se puede observar se ven las dos listas en la pagina web, con la store creada en el momento en el que la lista dentro de la store cambie se agregue o elimine un valor, imediatamente se reflejara el cambio en las dos listas de la web
+
+Se demuestra asi el funcionamiento de este estado global.
+
+![Resultado de las listas compartidas](capturas/Evidencia_Store_Web.png)
+
+### Error que nos pasó y solución
+
+Durante el desarrollo del ejemplo, las listas aparecían desordenadas en la página, con un fondo negro y con un orden que no se programó.
+
+Esto ocurrió porque el proyecto Vue que utilizamos para las pruebas todavía tenía los estilos CSS que vienen por defecto como ejemplo que da Vue. Esto hacía que la presentación creada se vea diferente y desordenada.
+
+Para solucionar el problema, se revisó el archivo `main.js` y se comentó la importación de `main.css`, así no se aplicaron estos estilos en la app.
+
+Después de estos cambios la página web se mostró tal cual se deseaba y el ejemplo se vio bien.
+
+### Fuentes:
+
+[Documentación oficial de Pinia](https://pinia.vuejs.org/)
+
+[Documentación oficial de Vue — Renderizado de listas](https://vuejs.org/guide/essentials/list.html)
 
