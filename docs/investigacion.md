@@ -27,87 +27,84 @@ Las características que más nos sirven para este proyecto son:
 
 ## Instalación
 
-Para trabajar con Vue utilizamos Node.js y npm. Node.js permite ejecutar JavaScript fuera del navegador y npm nos ayuda a instalar las herramientas del proyecto.
-
-Primero comprobamos las versiones con estos comandos:
+Primero revisamos que Node.js y npm estuvieran instalados usando estos comandos:
 
 ```powershell
 node -v
 npm.cmd -v
 ```
 
-Al ejecutar `npm -v`, PowerShell bloqueó la ejecución del archivo `npm.ps1`. Lo solucionamos usando `npm.cmd`, sin cambiar la configuración del sistema.
-
-Después iniciamos el asistente para crear el proyecto:
+Después creamos el proyecto con:
 
 ```powershell
 npm.cmd create vue@latest
 ```
 
-Usamos temporalmente el nombre `base-vue`. Elegimos JavaScript y seleccionamos Router, Pinia y Vitest para preparar las rutas, el manejo de datos compartidos y las pruebas.
+Le pusimos temporalmente el nombre `base-vue` y elegimos JavaScript, marcamos Router, Pinia y Vitest, que usaremos para las rutas, los datos compartidos y las pruebas.
 
-![Selección de herramientas del proyecto](capturas/conf_1.png)
+![Opciones seleccionadas](capturas/conf_1.png)
 
-Dejamos sin seleccionar las funciones experimentales y elegimos comenzar sin código de ejemplo.
+No marcamos las opciones experimentales y elegimos empezar sin código de ejemplo para agregar nuestros propios componentes.
 
 ![Configuración del proyecto](capturas/conf_2.png)
 
-Después movimos los archivos generados a nuestra carpeta principal `Practica_VUE`, conservando las carpetas y archivos que ya habíamos creado.
-
-Desde esa carpeta instalamos las dependencias:
+Luego pasamos los archivos a nuestra carpeta `Practica_VUE` e instalamos las dependencias:
 
 ```powershell
 npm.cmd install
 ```
 
-La instalación agregó 231 paquetes. También mostró un aviso de cinco vulnerabilidades moderadas, que quedaron pendientes de revisión.
+Se instalaron 231 paquetes ademas también apareció un aviso de cinco vulnerabilidades moderadas que quedaron pendientes de revisar.
 
-![Instalación de las dependencias](capturas/instalacion.png)
+![Instalación terminada](capturas/instalacion.png)
 
 ## Vite
 
-Vite es la herramienta que utilizamos para ejecutar el proyecto mientras trabajamos. Nos permite ver los cambios en el navegador al guardar los archivos.
-
-Iniciamos el servidor con:
+Vite nos permite abrir el proyecto en el navegador y ver los cambios mientras trabajamos para poder realizar esta vista tenemos que iniciarlo con:
 
 ```powershell
 npm.cmd run dev
 ```
 
-Después abrimos la dirección `http://localhost:5173/` en el navegador para ver nuestra aplicación.
+La terminal nos mostró la dirección `http://localhost:5173/`, que abrimos para ver la página.
 
-![Servidor de Vite iniciado](capturas/servidor_iniciado.png)
+![Servidor iniciado](capturas/servidor_iniciado.png)
 
-El tiempo que aparece junto a “ready” corresponde al arranque del servidor, no al tiempo total de configuración del proyecto.
+El tiempo que aparece junto a “ready” es lo que tardó en arrancar el servidor, no todo el tiempo que nos tomó configurar el proyecto.
 
-Vite también permite preparar los archivos para publicar la aplicación con el comando:
+Cuando necesitemos preparar la aplicación para publicarla, podremos usar:
 
 ```powershell
 npm.cmd run build
 ```
 
+## Tiempo de configuración
+
+La configuración del proyecto nos tomó aproximadamente unos 24 minutos, incluyendo la organización de los archivos y estimamos este tiempo a partir de un cronometro.
+
+![Tiempo](capturas/cronometro.png)
+
 ## Estructura de carpetas
 
-Organizamos el proyecto con nombres sencillos para encontrar nuestros archivos fácilmente:
+Separamos los archivos para encontrar más fácil cada parte del proyecto:
 
-- **src:** contiene el código de la aplicación.
-- **src/componentes:** guarda `tarea_item.vue`, `tarea_form.vue`, `tarea_lista.vue` y `tarea_filtro.vue`.
-- **src/estilos:** contiene `estilos.css`, donde colocaremos el diseño.
-- **src/vistas:** contiene `tareas.vue`, que será nuestra pantalla principal.
-- **docs:** guarda la investigación del proyecto.
-- **docs/capturas:** contiene las imágenes que usamos como evidencias.
+- **src/componentes:** aquí van los cuatro componentes de las tareas.
+- **src/estilos:** aquí está `estilos.css`, donde pondremos los colores, tamaños y diseño.
+- **src/vistas:** aquí está `tareas.vue`, que será la pantalla principal.
+- **docs:** aquí guardamos la investigación.
+- **docs/capturas:** aquí guardamos las imágenes del proceso.
 
-También utilizamos estos archivos principales:
+También tenemos estos archivos:
 
-- **App.vue:** es el componente principal de la aplicación.
-- **main.js:** inicia Vue y registra las herramientas del proyecto.
-- **index.html:** contiene el elemento donde se monta la aplicación.
-- **package.json:** contiene las dependencias y los comandos.
-- **package-lock.json:** registra las versiones exactas de las dependencias instaladas.
+- **App.vue:** es el componente principal.
+- **main.js:** inicia la aplicación y conecta las herramientas.
+- **index.html:** es la página donde se muestra la aplicación.
+- **package.json:** guarda las dependencias y los comandos del proyecto.
+- **package-lock.json:** guarda las versiones exactas de las dependencias instaladas.
 
 ## Hola Mundo
 
-Para comprobar que Vue funcionaba, escribimos este ejemplo en `src/App.vue`:
+Para comprobar que Vue funcionaba, pusimos este código en `App.vue`:
 
 ```vue
 <script setup>
@@ -119,10 +116,83 @@ const saludo = 'Hola Mundo'
 </template>
 ```
 
-En `script setup` creamos la variable `saludo`. Dentro de `template` colocamos el título que queremos mostrar. Las llaves dobles `{{ saludo }}` permiten mostrar el contenido de la variable en la página.
+Creamos la variable `saludo` con el texto “Hola Mundo”. Después usamos `{{ saludo }}` para mostrar ese texto dentro de un título.
 
-![Código de Hola Mundo en App.vue](capturas/codigo_app.png)
+![Código en App.vue](capturas/codigo_app.png)
 
-Guardamos el archivo y revisamos el navegador. Al aparecer el mensaje “Hola Mundo”, comprobamos que la aplicación iniciaba y mostraba el contenido correctamente.
+Guardamos el archivo y revisamos el navegador y al ver el mensaje “Hola Mundo” comprobamos que la aplicación estaba funcionando.
 
-![Hola Mundo funcionando en el navegador](capturas/hola_mundo.png)
+![Hola Mundo en el navegador](capturas/hola_mundo.png)
+
+# Bloque 3: componentes, props, eventos, v-if, v-for y ciclo de vida
+
+## Componentes
+
+Los componentes son partes de la página que podemos usar varias veces. Nos ayudan a separar el código y no tener que escribir lo mismo para cada tarea.
+
+En nuestro proyecto vamos a usar estos cuatro:
+
+- **tarea_item.vue:** muestra una tarea con sus botones.
+- **tarea_form.vue:** permite escribir el título de una tarea o editarlo.
+- **tarea_lista.vue:** muestra las tareas.
+- **tarea_filtro.vue:** permite ver todas las tareas, solo las pendientes o las completadas.
+
+Usamos el mismo componente para mostrar las tres tareas.
+
+![Tres tareas con el mismo componente](capturas/tres_tareas.png)
+
+## Props
+
+Los props permiten pasar información de un componente a otro únicamente del componente de tipo padre al componente de tipo hijo.
+
+De ese modo la lista pasará a `tarea_item.vue` la información de cada tarea y con ello estaremos utilizando el mismo componente pero cada uno de ellos mostrará su propio título y estado.
+
+Cada tarea tendrá un identificador `id`, un título `title` y un valor que indica si está completada `completed`.
+
+Recibimos los datos de cada tarea mediante una prop.
+
+![Props de la tarea](capturas/props.png)
+
+## Eventos
+
+Los eventos permiten que un componente notifique a los demás sobre algún acontecimiento, como presionar la tecla Eliminar, enviar un formulario, etc.
+
+Así que vamos a preparar eventos para crear, modificar, eliminar y marcar tareas como completadas en esta primera parte solo mostraremos que el aviso llega correctamente más adelante lo uniremos con Pinia y la API para efectuar los cambios.
+
+Los componentes envían eventos y la vista muestra los datos recibidos.
+
+![Código del evento 1](capturas/eventos_1.png)
+
+![Código del evento 2](capturas/eventos_2.png)
+
+![Evento recibido](capturas/evento_recibido.png)
+
+## v-if
+
+`v-if`  sirve para mostrar algo si se cumple una condición. 
+
+Lo utilizaremos para mostrar la lista cuando haya tareas en ella y si la lista no tiene tareas con `v-else` fijaremos que se muestre otro mensaje distinto ademas de que también servirá para poder mostrar el botón Cancelar solo cuando estemos editando.
+
+## v-for
+
+`v-for` sirve para recorrer una lista y repetir un elemento por cada dato.
+
+Por esta razón utilizaremos `v-for` para mostrar las tres tareas de ejemplo sin necesidad de escribir tres veces el mismo código en si cada tarea se mostrará con el componente `tarea_item.vue` también agregaremos `:key="tarea.id"` para ayudar a Vue a poder identificar cada tarea.
+
+Usamos v-if para comprobar si hay tareas y v-for para mostrarlas.
+
+![Uso de v-if y v-for](capturas/lista_codigo.png)
+
+## Ciclo de vida
+
+Un componente pasa por varias etapas las cuales son se prepara, aparece en la página, puede actualizarse y finalmente retirarse.
+
+Vue tiene funciones que nos permiten hacer algo en esos momentos:
+
+- **onMounted:** podemos ejecutar una acción cuando el componente ya aparece en la página.
+- **onUpdated:** podemos ejecutar una acción después de que se actualiza lo que muestra el componente.
+- **onUnmounted:** podemos hacer una limpieza cuando el componente se retira, como detener un temporizador.
+
+Por ahora no necesitamos usar estas funciones, porque trabajaremos con tres tareas de ejemplo y no cargaremos datos desde una API.
+
+

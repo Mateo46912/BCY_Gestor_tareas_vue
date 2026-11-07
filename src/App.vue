@@ -1,7 +1,7 @@
 <script setup>
-const saludo = 'Hola Mundo'
+import { RouterView } from 'vue-router'
 </script>
 
 <template>
-  <h1>{{ saludo }}</h1>
+  <RouterView />
 </template>
