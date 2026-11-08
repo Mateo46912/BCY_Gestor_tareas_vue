@@ -6,12 +6,14 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
   const EstaCargando = ref(false);
   const error = ref("");
 
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
+
   async function ObtenerLasTareasAPI() {
     EstaCargando.value = true;
     error.value = "";
 
     try {
-      const respuesta = await fetch("http://localhost:3000/tareas");
+      const respuesta = await fetch(`${API_BASE}/tareas`);
 
       if (!respuesta.ok) {
         throw new Error("No se pudieron obtener las tareas");
@@ -32,7 +34,7 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
       return tareaEncontradaLocal;
     }
 
-    const respuesta = await fetch("http://localhost:3000/tareas/" + id);
+    const respuesta = await fetch(`${API_BASE}/tareas/${id}`);
 
     if (!respuesta.ok) {
       throw new Error("No se encontró la tarea buscada");
@@ -45,7 +47,7 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
     error.value = "";
 
     try {
-      const respuesta = await fetch("http://localhost:3000/tareas", {
+      const respuesta = await fetch(`${API_BASE}/tareas`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +69,7 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
     error.value = "";
 
     try {
-      const respuesta = await fetch("http://localhost:3000/tareas/" + id, {
+      const respuesta = await fetch(`${API_BASE}/tareas/${id}`, {
         method: "DELETE",
       });
 
@@ -77,7 +79,7 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
 
       await ObtenerLasTareasAPI();
     } catch (e) {
-      error.value = "Se produjo un error al intentar eliminar la tarea:: " + e.message;
+      error.value = "Se produjo un error al intentar eliminar la tarea: " + e.message;
     }
   }
 
@@ -85,7 +87,7 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
     error.value = "";
 
     try {
-      const respuesta = await fetch("http://localhost:3000/tareas/" + tarea_por_actualizar.id, {
+      const respuesta = await fetch(`${API_BASE}/tareas/${tarea_por_actualizar.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +111,7 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
     error.value = "";
 
     try {
-      const respuesta = await fetch("http://localhost:3000/tareas/" + tarea_por_cambiar_estado.id, {
+      const respuesta = await fetch(`${API_BASE}/tareas/${tarea_por_cambiar_estado.id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
