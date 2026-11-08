@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { TareasCompartidasStore } from "../stores/datos_tareas";
 
@@ -11,6 +11,9 @@ const EstaCargando = ref(true);
 const error = ref("");
 
 async function obtenerTarea() {
+  EstaCargando.value = true;
+  error.value = "";
+  tarea.value = null;
   try {
     tarea.value = await store_compartida.obtenerTareaPorID(route.params.id);
   } catch (e) {
@@ -21,6 +24,13 @@ async function obtenerTarea() {
 }
 
 onMounted(obtenerTarea);
+
+watch(
+  () => route.params.id,
+  () => {
+    obtenerTarea();
+  }
+);
 </script>
 
 <template>

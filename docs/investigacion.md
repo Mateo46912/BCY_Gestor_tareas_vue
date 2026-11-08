@@ -777,53 +777,67 @@ Una vez solucionado el problema, Vitest ejecutó el archivo `src/__tests__/App.s
 
 # Bloque 7: Despliegue, métricas del proyecto y rendimiento
 
-## 1. Preparación de la API en la nube y rutas para producción
+## 1. Preparación de la API en la nube y configuración de `.env`
 
-Como en los bloques anteriores trabajamos con `JSON Server` de forma local (`http://localhost:3000`), al subir la página a internet no iba a poder conectarse a la computadora local.
+Como en los bloques anteriores trabajamos con `JSON Server` de forma local (`http://localhost:3000`), al subir la aplicación a internet el navegador no puede conectarse a una computadora local.
 
-Para solucionarlo creamos una API REST gratuita en la nube usando **MockAPI.io** con el recurso `tareas`, poblada con las 12 tareas oficiales del proyecto académico y los mismos campos (`id`, `title`, `completed`). Después actualizamos el archivo `src/stores/datos_tareas.js` para que use la variable de entorno `VITE_API_URL`:
+Para solucionarlo creamos una API REST en la nube usando **MockAPI.io** con el recurso `tareas`, poblada con las 12 tareas oficiales del proyecto académico y los mismos campos (`id`, `title`, `completed`). Después actualizamos el archivo `src/stores/datos_tareas.js` para que utilice la variable de entorno `VITE_API_URL`:
 
 ```javascript
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
 ```
 
-De esta manera, en desarrollo local puede seguir usando `localhost:3000` y en producción se conecta automáticamente a nuestra API en la nube (`https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas`).
+### Funcionamiento entre entorno local y nube (`.env`)
 
-Además, como nuestra aplicación usa **Vue Router** (Single Page Application), agregamos los archivos `vercel.json` y `public/_redirects` redirigiendo las rutas a `/index.html`. Con esto evitamos que salga error `404` cuando el usuario recarga la página estando en `/tareas` o en `/tareas/:id`.
+En la raíz del proyecto se incluyó el archivo `.env` apuntando a MockAPI:
 
-## 2. Compilación a producción (`build`) y conteo de líneas de código
+```env
+VITE_API_URL=[https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1](https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1)
+```
 
-Antes de desplegar, generamos la versión optimizada de producción con el comando:
+El cambio entre entornos funciona así:
+- **Con `VITE_API_URL` configurada hacia MockAPI en `.env`:** Tanto la versión publicada en Vercel como el entorno de desarrollo (`npm.cmd run dev`) consumen los datos directamente desde **MockAPI.io**.
+- **Para usar `JSON Server` local:** Basta con cambiar el valor en `.env` a `VITE_API_URL=http://localhost:3000` (o eliminar la línea en `.env`) e iniciar `npx.cmd json-server db.json`, con lo cual la aplicación vuelve a operar sobre el archivo `db.json` local.
+- **Solución de compatibilidad HTTP en producción:** Para editar el título y cambiar el estado de las tareas en el store se utilizó el método `PUT` enviando el objeto completo (`title` y `completed`). Esto resolvió el error `Failed to fetch` que ocurría con `PATCH` en producción debido a las políticas CORS de MockAPI, manteniendo compatibilidad total con JSON Server.
+
+Además, como nuestra aplicación usa **Vue Router** (Single Page Application), agregamos los archivos `vercel.json` y `public/_redirects` redirigiendo las rutas a `/index.html` para evitar errores `404` al acceder o recargar directamente rutas como `/tareas` o `/tareas/:id`.
+
+## 2. Compilación a producción (`build`), tamaño de `dist` y conteo de líneas (`cloc`)
+
+Generamos la versión optimizada de producción y medimos el tamaño total de la carpeta `dist` generada:
 
 ```powershell
 npm.cmd run build
+Get-ChildItem .\dist -Recurse -File | Measure-Object -Property Length -Sum
 ```
 
-Vite empaquetó y comprimió los 30 módulos de la aplicación en 106 ms dentro de la carpeta `dist`.
+Vite empaquetó los 30 módulos de la aplicación en **109 ms**, generando 5 archivos dentro de la carpeta `dist` con un peso total real en disco de **108.04 kB (110,638 bytes)**.
 
-### Evidencia del build en terminal
+### Evidencia del build y tamaño de la carpeta `dist`
 
 ![Salida del comando build](capturas/Evidencia_Build_Terminal.png)
 
-Posteriormente medimos las líneas de código de la carpeta `src` utilizando la herramienta `sloc` en la terminal:
+Posteriormente medimos las líneas de código de la carpeta `src` utilizando la herramienta `cloc` solicitada:
 
 ```powershell
-npx.cmd sloc src
+npx.cmd cloc src
 ```
 
-### Evidencia del conteo de líneas de código
+El análisis contabilizó **13 archivos** (`7` componentes Vue con `250` líneas de código, `5` archivos JavaScript con `223` líneas y `1` archivo CSS con `157` líneas), sumando **630 líneas netas de código (`code`)** y **128 líneas en blanco (`blank`)**.
 
-![Conteo de líneas con sloc](capturas/Evidencia_Cloc.png)
+### Evidencia del conteo de líneas de código con `cloc`
+
+![Conteo de líneas con cloc](capturas/Evidencia_Cloc.png)
 
 ## 3. Despliegue en Vercel y auditoría con Lighthouse
 
-Desplegamos la aplicación en **Vercel** vinculando nuestro proyecto mediante Vercel CLI. La aplicación quedó publicada y funcionando en tiempo real en los siguientes enlaces públicos:
+Desplegamos la versión final en **Vercel** mediante `npx.cmd vercel --prod`. La aplicación quedó publicada y operativa en los siguientes enlaces:
 
 - **URL principal de producción (Alias):** [https://bcy-gestor-tareas-vue.vercel.app/tareas](https://bcy-gestor-tareas-vue.vercel.app/tareas)
-- **URL directa del despliegue en Vercel:** [https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas](https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas)
+- **URL del despliegue en producción:** [https://bcy-gestor-tareas-e5348osux-michael-b6ba.vercel.app/tareas](https://bcy-gestor-tareas-e5348osux-michael-b6ba.vercel.app/tareas)
 - **Endpoint de la API en la nube (MockAPI):** [https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas](https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas)
 
-Una vez publicada con las 12 tareas cargadas, abrimos la aplicación desplegada y ejecutamos la auditoría de **Lighthouse** desde las herramientas de desarrollador de Google Chrome para medir el rendimiento real.
+Una vez comprobadas todas las operaciones CRUD en producción con las 12 tareas oficiales, realizamos la auditoría de **Lighthouse** desde Google Chrome DevTools.
 
 ### Evidencia de Lighthouse en producción
 
@@ -831,49 +845,59 @@ Una vez publicada con las 12 tareas cargadas, abrimos la aplicación desplegada 
 
 ## 4. Tabla resumen de métricas del proyecto
 
-En la siguiente tabla se resumen todas las mediciones obtenidas de nuestra aplicación en Vue 3:
+En la siguiente tabla se resumen todas las mediciones obtenidas del proyecto:
 
 | Métrica | Resultado | Detalle |
 |---|---|---|
-| **Archivos analizados en `src/`** | 13 archivos | Componentes, vistas, router, store, estilos y pruebas |
-| **Líneas físicas totales** | 728 líneas | Incluye código, comentarios y líneas en blanco |
-| **Líneas de código reales (SLOC)** | 595 líneas | Líneas netas de código fuente en `src/` |
-| **Tiempo de compilación (`build`)** | 106 ms | 30 módulos transformados con Vite v8.3.6 |
+| **Tiempo de configuración inicial** | 24 minutos | Creación con Vite, dependencias y estructura inicial |
+| **Horas totales del grupo** | [EJ: 18 horas] | Ariel: [X] h, Mateo: [X] h, Michael: [X] h |
+| **Dificultad percibida (1–5)** | [EJ: 3.3 / 5] | Promedio grupal (Ariel: [X], Mateo: [X], Michael: [X]) |
+| **Archivos en `src/` (`npx cloc src`)** | 13 archivos | 7 Vuejs Component, 5 JavaScript y 1 CSS |
+| **Líneas de código reales (`cloc` code)** | 630 líneas | 250 en Vue, 223 en JS y 157 en CSS |
+| **Líneas en blanco y comentarios (`cloc`)** | 128 en blanco / 0 comentarios | Total de 758 líneas físicas en `src/` |
+| **Tiempo de compilación (`build`)** | 109 ms | 30 módulos transformados con Vite v8.3.6 |
 | **Tamaño del HTML (`dist/index.html`)** | 0.44 kB (gzip: 0.29 kB) | Archivo raíz de la aplicación |
 | **Tamaño del CSS (`dist/assets/*.css`)** | 2.06 kB (gzip: 0.87 kB) | Estilos empaquetados y minificados |
-| **Tamaño del JS (`dist/assets/*.js`)** | 103.36 kB (gzip: 39.85 kB) | Incluye Vue 3, Vue Router, Pinia y lógica de la app |
-| **Tamaño total del build (`dist/`)** | 105.86 kB (gzip: 41.01 kB) | Peso total descargado por el navegador |
-| **Pruebas unitarias (Vitest)** | 3 passed (1.25 s) | 100% de pruebas aprobadas en `App.spec.js` |
-| **Lighthouse - Performance** | 99 / 100 | Carga rápida en producción sobre Vercel con las 12 tareas |
+| **Tamaño del JS (`dist/assets/*.js`)** | 103.82 kB (gzip: 39.96 kB) | Vue 3, Vue Router, Pinia y lógica de la app |
+| **Tamaño real de la carpeta `dist/`** | 108.04 kB (110,638 bytes) | Peso total de los 5 archivos generados en `dist/` |
+| **Pruebas unitarias (Vitest)** | 3 passed (1.26 s) | 100% de pruebas aprobadas en `App.spec.js` |
+| **Lighthouse - Performance** | 99 / 100 | Carga en producción sobre Vercel con las 12 tareas |
 | **Lighthouse - Accessibility** | 87 / 100 | Botones, formularios y estructura accesible |
-| **Lighthouse - Best Practices** | 100 / 100 | Uso de HTTPS y buenas prácticas de desarrollo web |
-| **Lighthouse - SEO** | 45 / 100 | Aplicación SPA enfocada en gestión interna de tareas |
+| **Lighthouse - Best Practices** | 100 / 100 | Uso de HTTPS y buenas prácticas web |
+| **Lighthouse - SEO** | 45 / 100 | Aplicación SPA enfocada en gestión interna |
 
 # Declaración de uso de Inteligencia Artificial
 
-Durante el desarrollo integral de este proyecto académico se utilizaron herramientas de Inteligencia Artificial como entorno de soporte técnico, análisis conceptual y depuración de código:
+Durante el desarrollo de este trabajo grupal nos apoyamos en herramientas de Inteligencia Artificial como soporte de consulta, aprendizaje y depuración, manteniendo la redacción propia y la verificación técnica por parte del equipo:
 
-## Herramientas utilizadas y propósitos específicos
+## Uso por integrante
 
-- **NotebookLM (Google):**
-  - **Uso:** Se utilizó como fuente de consulta, análisis bibliográfico y síntesis documental para estructurar los requerimientos teóricos y conceptuales de los bloques 1 al 7 a partir de la documentación oficial de Vue 3, Vite, Pinia y Vitest.
-  - **Cuaderno de trabajo:** [Acceso al cuaderno de NotebookLM](https://notebook.google.com/notebook/005fe3e6-e39b-49bc-b954-3f950131960b?authuser=1)
+- **Ariel Badillo (Bloques 1, 2 y 3):**
+  - Utilizó ChatGPT como apoyo de consulta para revisar la organización de carpetas en un proyecto con Vite y la sintaxis de comunicación entre componentes mediante `props` y eventos (`emit`) en Vue 3.
 
-- **ChatGPT y Gemini (Google):**
-  - **Uso:** Soporte interactivo para la resolución de errores en tiempo de compilación y ejecución.
-  - **Casos resueltos:**
-    - Corrección del error lógico en la reactividad básica (`==` por `=`) en la asignación del estado de tareas.
-    - Resolución del error `ERR_MODULE_NOT_FOUND` al inicializar la suite de pruebas unitarias en Vitest.
-    - Implementación de stubs para `RouterLink` en `@vue/test-utils` para evitar roturas de renderizado en `tarea_item.vue`.
-    - Configuración de la variable de entorno `VITE_API_URL` para alternar limpiamente entre `localhost:3000` (JSON Server) y la API en la nube (`MockAPI.io`).
-    - Configuración de las reglas de reescritura en `vercel.json` y `public/_redirects` para solucionar el error 404 al recargar rutas profundas (`/tareas/:id`) en Vercel.
+- **Mateo Cordero (Bloques 4 y 5, e implementación de Pinia, Vue Router y CRUD):**
+  - Utilizó ChatGPT para:
+    - Comprender la reactividad de Vue, `ref()`, `computed()` y el manejo de estado global con Pinia (`defineStore()`).
+    - Entender Vue Router, las rutas dinámicas (`/tareas/:id`) y el uso de `useRoute()`.
+    - Comprender las solicitudes HTTP con `fetch()` y el control de errores con `try/catch/finally`.
+    - Resolver dudas y revisar errores durante la implementación del CRUD (como el operador `==` por `=` en reactividad y el conflicto de estilos con `main.css`).
+    - Revisar la sintaxis Markdown del informe, corregir ortografía y detectar explicaciones técnicamente incorrectas, manteniendo la redacción propia.
 
-## Enlaces de verificación y despliegue
+- **Michael Yumbla (Bloques 6 y 7, pruebas unitarias y despliegue en producción):**
+  - Utilizó Gemini y ChatGPT para:
+    - Configurar las pruebas unitarias con Vitest y `@vue/test-utils`, incluyendo el uso de `stubs` para `RouterLink` y la solución al error inicial `ERR_MODULE_NOT_FOUND`.
+    - Configurar las redirecciones SPA (`vercel.json` y `public/_redirects`) para Vercel, usar `cloc` en Windows y corregir el error `Failed to fetch` al editar tareas en producción reemplazando `PATCH` por `PUT` en MockAPI.
 
-- **Aplicación en Producción:** [https://bcy-gestor-tareas-vue.vercel.app/tareas](https://bcy-gestor-tareas-vue.vercel.app/tareas)
-- **Despliegue Vercel:** [https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas](https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas)
-- **API REST (MockAPI.io):** [https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas](https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas)
+- **NotebookLM (Google) — Consulta final y repaso:**
+  - Se incorporó al final del proyecto para reunir las fuentes oficiales de documentación (Vue 3, Vite, Pinia, Vue Router y Vitest) y preparar el repaso del grupo previo a la presentación.
+  - **Cuaderno de NotebookLM:** [https://notebook.google.com/notebook/005fe3e6-e39b-49bc-b954-3f950131960b?authuser=1](https://notebook.google.com/notebook/005fe3e6-e39b-49bc-b954-3f950131960b?authuser=1)
 
-## Criterio de validación y control humano
+## Enlaces del proyecto
 
-Todas las respuestas, esquemas y bloques de código sugeridos por los modelos de IA fueron revisados críticamente, adaptados a la arquitectura de nombres de nuestro equipo y probados tanto en entorno de desarrollo local como en el entorno productivo de Vercel antes de su integración final en la rama principal.
+- **Aplicación en producción (Vercel):** [https://bcy-gestor-tareas-vue.vercel.app/tareas](https://bcy-gestor-tareas-vue.vercel.app/tareas)
+- **API REST en la nube (MockAPI.io):** [https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas](https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas)
+- **Repositorio en GitHub:** [https://github.com/Mateo46912/BCY_Gestor_tareas_vue.git](https://github.com/Mateo46912/BCY_Gestor_tareas_vue.git)
+
+## Revisión y validación
+
+Todo el código y la documentación fueron probados, adaptados a los nombres de nuestras variables y componentes, ejecutados localmente y comprobados desde la URL pública de Vercel por los integrantes del grupo antes de la entrega final.

@@ -27,8 +27,6 @@ const tareasFiltradas = computed(() => {
   return store_compartida.tareas;
 });
 
-
-
 async function guardarEdicion(datos) {
   await store_compartida.ActualizarTareasPorID(datos);
 
@@ -46,17 +44,24 @@ async function guardarEdicion(datos) {
     </header>
 
     <div class="contenido">
-      <TareaForm :tarea="tareaEditando" @crear="store_compartida.CrearTareaNueva($event)" @editar="guardarEdicion" @cancelar="tareaEditando = null" />
+      <TareaForm
+        :tarea="tareaEditando"
+        @crear="store_compartida.CrearTareaNueva($event)"
+        @editar="guardarEdicion"
+        @cancelar="tareaEditando = null"
+      />
 
       <section class="panel">
         <h2>Lista de tareas</h2>
-        <p v-if="store_compartida.EstaCargando">Cargando tareas...</p>
-        <p v-else-if="store_compartida.error">{{ store_compartida.error }}</p>
+        <p v-if="store_compartida.EstaCargando && store_compartida.tareas.length === 0">
+          Cargando tareas...
+        </p>
+        <p v-if="store_compartida.error">{{ store_compartida.error }}</p>
 
         <TareaFiltro :filtro="filtro" @filtrar="filtro = $event" />
 
         <TareaLista
-          v-if="!store_compartida.EstaCargando && !store_compartida.error"
+          v-if="!store_compartida.EstaCargando || store_compartida.tareas.length > 0"
           :tareas="tareasFiltradas"
           @editar="tareaEditando = $event"
           @eliminar="store_compartida.EliminarTareaPorID($event)"
