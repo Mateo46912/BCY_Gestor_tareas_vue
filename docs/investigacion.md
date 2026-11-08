@@ -781,7 +781,7 @@ Una vez solucionado el problema, Vitest ejecutó el archivo `src/__tests__/App.s
 
 Como en los bloques anteriores trabajamos con `JSON Server` de forma local (`http://localhost:3000`), al subir la página a internet no iba a poder conectarse a la computadora local.
 
-Para solucionarlo creamos una API REST gratuita en la nube usando **MockAPI.io** con el recurso `tareas` y los mismos campos (`id`, `title`, `completed`). Después actualizamos el archivo `src/stores/datos_tareas.js` para que use la variable de entorno `VITE_API_URL`:
+Para solucionarlo creamos una API REST gratuita en la nube usando **MockAPI.io** con el recurso `tareas`, poblada con las 12 tareas oficiales del proyecto académico y los mismos campos (`id`, `title`, `completed`). Después actualizamos el archivo `src/stores/datos_tareas.js` para que use la variable de entorno `VITE_API_URL`:
 
 ```javascript
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -843,7 +843,7 @@ En la siguiente tabla se resumen todas las mediciones obtenidas de nuestra aplic
 | **Tamaño del JS (`dist/assets/*.js`)** | 103.36 kB (gzip: 39.85 kB) | Incluye Vue 3, Vue Router, Pinia y lógica de la app |
 | **Tamaño total del build (`dist/`)** | 105.86 kB (gzip: 41.01 kB) | Peso total descargado por el navegador |
 | **Pruebas unitarias (Vitest)** | 3 passed (1.25 s) | 100% de pruebas aprobadas en `App.spec.js` |
-| **Lighthouse - Performance** | 100 / 100 | Carga rápida en producción sobre Vercel |
+| **Lighthouse - Performance** | 99 / 100 | Carga casi instantánea en producción sobre Vercel |
 | **Lighthouse - Accessibility** | 87 / 100 | Botones, formularios y estructura accesible |
 | **Lighthouse - Best Practices** | 100 / 100 | Uso de HTTPS y buenas prácticas de desarrollo web |
 | **Lighthouse - SEO** | 45 / 100 | Aplicación SPA enfocada en gestión interna de tareas |
