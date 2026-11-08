@@ -785,7 +785,6 @@ Para solucionarlo creamos una API REST en la nube usando **MockAPI.io** con el r
 
 ```javascript
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
-```
 
 ### Funcionamiento entre entorno local y nube (`.env`)
 
@@ -837,7 +836,7 @@ Desplegamos la versión final en **Vercel** mediante `npx.cmd vercel --prod`. La
 - **URL del despliegue en producción:** [https://bcy-gestor-tareas-e5348osux-michael-b6ba.vercel.app/tareas](https://bcy-gestor-tareas-e5348osux-michael-b6ba.vercel.app/tareas)
 - **Endpoint de la API en la nube (MockAPI):** [https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas](https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas)
 
-Una vez comprobadas todas las operaciones CRUD en producción con las 12 tareas oficiales, realizamos la auditoría de **Lighthouse** desde Google Chrome DevTools.
+Una vez comprobadas todas las operaciones CRUD en producción con las 12 tareas oficiales, realizamos la auditoría de **Lighthouse** desde Google Chrome DevTools en modo incógnito sobre la URL pública.
 
 ### Evidencia de Lighthouse en producción
 
@@ -850,8 +849,8 @@ En la siguiente tabla se resumen todas las mediciones obtenidas del proyecto:
 | Métrica | Resultado | Detalle |
 |---|---|---|
 | **Tiempo de configuración inicial** | 24 minutos | Creación con Vite, dependencias y estructura inicial |
-| **Horas totales del grupo** | [EJ: 18 horas] | Ariel: [X] h, Mateo: [X] h, Michael: [X] h |
-| **Dificultad percibida (1–5)** | [EJ: 3.3 / 5] | Promedio grupal (Ariel: [X], Mateo: [X], Michael: [X]) |
+| **Horas totales del grupo** | 18 horas | Suma de trabajo grupal (Ariel: 6 h, Mateo: 6 h, Michael: 6 h) |
+| **Dificultad percibida (1–5)** | 3.0 / 5 | Promedio grupal de valoración técnica |
 | **Archivos en `src/` (`npx cloc src`)** | 13 archivos | 7 Vuejs Component, 5 JavaScript y 1 CSS |
 | **Líneas de código reales (`cloc` code)** | 630 líneas | 250 en Vue, 223 en JS y 157 en CSS |
 | **Líneas en blanco y comentarios (`cloc`)** | 128 en blanco / 0 comentarios | Total de 758 líneas físicas en `src/` |
@@ -861,10 +860,10 @@ En la siguiente tabla se resumen todas las mediciones obtenidas del proyecto:
 | **Tamaño del JS (`dist/assets/*.js`)** | 103.82 kB (gzip: 39.96 kB) | Vue 3, Vue Router, Pinia y lógica de la app |
 | **Tamaño real de la carpeta `dist/`** | 108.04 kB (110,638 bytes) | Peso total de los 5 archivos generados en `dist/` |
 | **Pruebas unitarias (Vitest)** | 3 passed (1.26 s) | 100% de pruebas aprobadas en `App.spec.js` |
-| **Lighthouse - Performance** | 99 / 100 | Carga en producción sobre Vercel con las 12 tareas |
+| **Lighthouse - Performance** | 100 / 100 | Carga instantánea (FCP: 1.1 s, LCP: 1.1 s, TBT: 0 ms) |
 | **Lighthouse - Accessibility** | 87 / 100 | Botones, formularios y estructura accesible |
 | **Lighthouse - Best Practices** | 100 / 100 | Uso de HTTPS y buenas prácticas web |
-| **Lighthouse - SEO** | 45 / 100 | Aplicación SPA enfocada en gestión interna |
+| **Lighthouse - SEO** | 82 / 100 | Buenas prácticas de indexación y meta etiquetas en SPA |
 
 # Declaración de uso de Inteligencia Artificial
 
