@@ -726,3 +726,131 @@ En la captura se muestra la salida del comando: `npm.cmd run build`.
 ![Compilación correcta del proyecto con Vite](capturas/Evidencia_Proyecto_Compilado.png)
 
 Finalmente se implementaron de manera satisfactoria todos estos cambios y funciónalidades explicadas anteriormente. El proyecto está listo para la última fase de tests y el despliegue
+
+# Bloque 6: Pruebas unitarias con Vitest
+
+## ¿Qué son las pruebas unitarias y Vitest?
+
+Las pruebas unitarias sirven para comprobar que cada parte o componente de nuestra aplicación funcione correctamente de manera aislada antes de publicar el proyecto. 
+
+Para esto usamos **Vitest** junto con **`@vue/test-utils`**, que son las herramientas oficiales recomendadas en Vue 3 para montar componentes en un entorno de pruebas, simular clics o escritura del usuario y verificar que el componente responda o emita los eventos esperados sin tener que probar todo manualmente en el navegador.
+
+## Implementación de las 3 pruebas unitarias
+
+Creamos el archivo `src/__tests__/App.spec.js` donde programamos 3 pruebas unitarias para evaluar los componentes `tarea_item.vue` y `tarea_form.vue`:
+
+1. **Prueba 1 (Renderizado de datos por props):** Montamos el componente `tarea_item.vue` pasándole una tarea de ejemplo (`Practica - Estandares HTML`) con estado pendiente (`completed: false`). Usamos un `stub` para `RouterLink` y comprobamos con `expect()` que el título y el estado «Pendiente» se muestren correctamente en pantalla sin tener la clase `completada`.
+2. **Prueba 2 (Emisión del evento completar):** Simulamos el clic del usuario en el botón de completar dentro de `tarea_item.vue` usando `trigger('click')`. Verificamos que el componente emita el evento `completar` enviando el ID de la tarea y el estado booleano invertido (`{ id: '1', completed: true }`).
+3. **Prueba 3 (Creación de tarea desde el formulario):** Montamos el componente `tarea_form.vue`, simulamos que el usuario escribe `'Realizar pruebas con Vitest'` en el campo `#titulo` con `setValue()` y enviamos el formulario con `trigger('submit.prevent')`. Comprobamos que se emita el evento `crear` con los datos exactos de la nueva tarea (`{ title: 'Realizar pruebas con Vitest', completed: false }`).
+
+### Código de las pruebas implementadas
+
+En la siguiente captura se muestra el código completo de las tres pruebas unitarias dentro de `src/__tests__/App.spec.js`:
+
+![Código de las pruebas unitarias](capturas/Evidencia_Codigo_Tests.png)
+
+## Error que nos pasó y solución
+
+Al principio intentamos ejecutar las pruebas directamente con el comando `npx.cmd vitest run`, pero la terminal nos arrojó el error `ERR_MODULE_NOT_FOUND: Cannot find package 'vitest'` y avisos de importaciones no resueltas en `vite.config.js` y `vitest.config.js`.
+
+Esto pasó porque faltaba terminar de enlazar los paquetes de pruebas en `node_modules` y ejecutar el script configurado del proyecto. Para solucionarlo verificamos la instalación con `npm.cmd install` y ejecutamos las pruebas mediante el comando oficial definido en `package.json`:
+
+```powershell
+npm.cmd run test:unit
+```
+
+### Evidencia del error inicial
+
+![Error al ejecutar Vitest](capturas/Evidencia_Error_Tests.png)
+
+### Evidencia de las pruebas pasando correctamente
+
+Una vez solucionado el problema, Vitest ejecutó el archivo `src/__tests__/App.spec.js` y las 3 pruebas pasaron satisfactoriamente (`3 passed`):
+
+![Pruebas unitarias pasando en Vitest](capturas/Evidencia_Tests_Pasando.png)
+
+### Fuentes:
+
+[Documentación oficial de Vitest](https://vitest.dev/guide/)
+
+[Documentación oficial de Vue Test Utils](https://test-utils.vuejs.org/guide/)
+
+# Bloque 7: Despliegue, métricas del proyecto y rendimiento
+
+## 1. Preparación de la API en la nube y rutas para producción
+
+Como en los bloques anteriores trabajamos con `JSON Server` de forma local (`http://localhost:3000`), al subir la página a internet no iba a poder conectarse a la computadora local.
+
+Para solucionarlo creamos una API REST gratuita en la nube usando **MockAPI.io** con el recurso `tareas` y los mismos campos (`id`, `title`, `completed`). Después actualizamos el archivo `src/stores/datos_tareas.js` para que use la variable de entorno `VITE_API_URL`:
+
+```javascript
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
+```
+
+De esta manera, en desarrollo local puede seguir usando `localhost:3000` y en producción se conecta automáticamente a nuestra API en la nube (`https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1`).
+
+Además, como nuestra aplicación usa **Vue Router** (Single Page Application), agregamos los archivos `vercel.json` y `public/_redirects` redirigiendo las rutas a `/index.html`. Con esto evitamos que salga error `404` cuando el usuario recarga la página estando en `/tareas` o en `/tareas/:id`.
+
+## 2. Compilación a producción (`build`) y conteo de líneas de código
+
+Antes de desplegar, generamos la versión optimizada de producción con el comando:
+
+```powershell
+npm.cmd run build
+```
+
+Vite empaquetó y comprimió los 30 módulos de la aplicación en 106 ms dentro de la carpeta `dist`.
+
+### Evidencia del build en terminal
+
+![Salida del comando build](capturas/Evidencia_Build_Terminal.png)
+
+Posteriormente medimos las líneas de código de la carpeta `src` utilizando la herramienta `sloc` en la terminal:
+
+```powershell
+npx.cmd sloc src
+```
+
+### Evidencia del conteo de líneas de código
+
+![Conteo de líneas con sloc](capturas/Evidencia_Cloc.png)
+
+## 3. Despliegue en Vercel y auditoría con Lighthouse
+
+Desplegamos la aplicación en **Vercel** vinculando nuestro proyecto mediante Vercel CLI. La aplicación quedó publicada y funcionando en tiempo real en los siguientes enlaces:
+
+- **URL principal de producción:** [https://bcy-gestor-tareas-vue.vercel.app](https://bcy-gestor-tareas-vue.vercel.app)
+- **URL de despliegue en Vercel:** [https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas](https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas)
+
+Una vez publicada, abrimos la aplicación desplegada y ejecutamos la auditoría de **Lighthouse** desde las herramientas de desarrollador de Google Chrome para medir el rendimiento real.
+
+### Evidencia de Lighthouse en producción
+
+![Resultados de Lighthouse](capturas/Evidencia_Lighthouse.png)
+
+## 4. Tabla resumen de métricas del proyecto
+
+En la siguiente tabla se resumen todas las mediciones obtenidas de nuestra aplicación en Vue 3:
+
+| Métrica | Resultado | Detalle |
+|---|---|---|
+| **Archivos analizados en `src/`** | 13 archivos | Componentes, vistas, router, store, estilos y pruebas |
+| **Líneas físicas totales** | 728 líneas | Incluye código, comentarios y líneas en blanco |
+| **Líneas de código reales (SLOC)** | 595 líneas | Líneas netas de código fuente en `src/` |
+| **Tiempo de compilación (`build`)** | 106 ms | 30 módulos transformados con Vite v8.3.6 |
+| **Tamaño del HTML (`dist/index.html`)** | 0.44 kB (gzip: 0.29 kB) | Archivo raíz de la aplicación |
+| **Tamaño del CSS (`dist/assets/*.css`)** | 2.06 kB (gzip: 0.87 kB) | Estilos empaquetados y minificados |
+| **Tamaño del JS (`dist/assets/*.js`)** | 103.36 kB (gzip: 39.85 kB) | Incluye Vue 3, Vue Router, Pinia y lógica de la app |
+| **Tamaño total del build (`dist/`)** | 105.86 kB (gzip: 41.01 kB) | Peso total descargado por el navegador |
+| **Pruebas unitarias (Vitest)** | 3 passed (1.25 s) | 100% de pruebas aprobadas en `App.spec.js` |
+| **Lighthouse - Performance** | 100 / 100 | Carga rápida en producción sobre Vercel |
+| **Lighthouse - Accessibility** | 87 / 100 | Botones, formularios y estructura accesible |
+| **Lighthouse - Best Practices** | 100 / 100 | Uso de HTTPS y buenas prácticas de desarrollo web |
+| **Lighthouse - SEO** | 45 / 100 | Aplicación SPA enfocada en gestión interna de tareas |
+
+# Declaración de uso de Inteligencia Artificial
+
+Durante el desarrollo de este trabajo grupal nos apoyamos en herramientas de Inteligencia Artificial (ChatGPT y Gemini) como soporte de consulta y depuración:
+
+- **Consultas realizadas:** resolución del error de asignación (`==` por `=`) en el ejercicio de reactividad, solución al error de carga de módulos de Vitest (`ERR_MODULE_NOT_FOUND`), uso de `stubs` para `RouterLink` en las pruebas unitarias, configuración de la variable de entorno `VITE_API_URL` con MockAPI y reglas de redirección para el despliegue en Vercel.
+- **Revisión y validación:** todo el código sugerido fue probado, adaptado a los nombres de nuestras variables y componentes, ejecutado en nuestras computadoras y verificado mediante pruebas locales y en producción antes de subirlo al repositorio.
