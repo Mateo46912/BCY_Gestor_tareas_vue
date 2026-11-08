@@ -851,8 +851,29 @@ En la siguiente tabla se resumen todas las mediciones obtenidas de nuestra aplic
 
 # Declaración de uso de Inteligencia Artificial
 
-Durante el desarrollo de este trabajo grupal nos apoyamos en herramientas de Inteligencia Artificial como soporte de consulta, síntesis documental y depuración técnica:
+Durante el desarrollo integral de este proyecto académico se utilizaron herramientas de Inteligencia Artificial como entorno de soporte técnico, análisis conceptual y depuración de código:
 
-- **NotebookLM (Google):** Utilizado para estructurar y sintetizar el material bibliográfico de los bloques de investigación a partir de la documentación oficial de Vue 3, Vite, Pinia, Vue Router y Vitest, facilitando la organización conceptual del informe.
-- **ChatGPT y Gemini (Google):** Empleados como soporte técnico para la depuración de código: resolución del error de asignación (`==` por `=`) en el ejercicio de reactividad, solución al error de carga de módulos de Vitest (`ERR_MODULE_NOT_FOUND`), uso de `stubs` para `RouterLink` en las pruebas unitarias, configuración de la variable de entorno `VITE_API_URL` con MockAPI y reglas de redirección (`vercel.json` y `_redirects`) para el despliegue en Vercel.
-- **Revisión y validación humana:** Todo el material resumido y el código sugerido fueron revisados, adaptados a los nombres de nuestras variables y componentes, ejecutados en nuestras computadoras y verificados mediante pruebas locales y en producción antes de subirlos al repositorio.
+## Herramientas utilizadas y propósitos específicos
+
+- **NotebookLM (Google):**
+  - **Uso:** Se utilizó como fuente de consulta, análisis bibliográfico y síntesis documental para estructurar los requerimientos teóricos y conceptuales de los bloques 1 al 7 a partir de la documentación oficial de Vue 3, Vite, Pinia y Vitest.
+  - **Cuaderno de trabajo:** [Acceso al cuaderno de NotebookLM](https://notebook.google.com/notebook/005fe3e6-e39b-49bc-b954-3f950131960b?authuser=1)
+
+- **ChatGPT y Gemini (Google):**
+  - **Uso:** Soporte interactivo para la resolución de errores en tiempo de compilación y ejecución.
+  - **Casos resueltos:**
+    - Corrección del error lógico en la reactividad básica (`==` por `=`) en la asignación del estado de tareas.
+    - Resolución del error `ERR_MODULE_NOT_FOUND` al inicializar la suite de pruebas unitarias en Vitest.
+    - Implementación de stubs para `RouterLink` en `@vue/test-utils` para evitar roturas de renderizado en `tarea_item.vue`.
+    - Configuración de la variable de entorno `VITE_API_URL` para alternar limpiamente entre `localhost:3000` (JSON Server) y la API en la nube (`MockAPI.io`).
+    - Configuración de las reglas de reescritura en `vercel.json` y `public/_redirects` para solucionar el error 404 al recargar rutas profundas (`/tareas/:id`) en Vercel.
+
+## Enlaces de verificación y despliegue
+
+- **Aplicación en Producción:** [https://bcy-gestor-tareas-vue.vercel.app/tareas](https://bcy-gestor-tareas-vue.vercel.app/tareas)
+- **Despliegue Vercel:** [https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas](https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas)
+- **API REST (MockAPI.io):** [https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas](https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas)
+
+## Criterio de validación y control humano
+
+Todas las respuestas, esquemas y bloques de código sugeridos por los modelos de IA fueron revisados críticamente, adaptados a la arquitectura de nombres de nuestro equipo y probados tanto en entorno de desarrollo local como en el entorno productivo de Vercel antes de su integración final en la rama principal.
