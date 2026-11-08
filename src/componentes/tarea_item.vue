@@ -38,6 +38,11 @@ defineEmits(['editar', 'eliminar', 'completar'])
       >
         Eliminar
       </button>
+        <RouterLink id="detalles" :to="'/tareas/' + tarea.id">
+            Ver detalle
+        </RouterLink>
     </div>
+
   </li>
+
 </template>
