@@ -787,7 +787,7 @@ Para solucionarlo creamos una API REST gratuita en la nube usando **MockAPI.io**
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
 ```
 
-De esta manera, en desarrollo local puede seguir usando `localhost:3000` y en producción se conecta automáticamente a nuestra API en la nube (`https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1`).
+De esta manera, en desarrollo local puede seguir usando `localhost:3000` y en producción se conecta automáticamente a nuestra API en la nube (`https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas`).
 
 Además, como nuestra aplicación usa **Vue Router** (Single Page Application), agregamos los archivos `vercel.json` y `public/_redirects` redirigiendo las rutas a `/index.html`. Con esto evitamos que salga error `404` cuando el usuario recarga la página estando en `/tareas` o en `/tareas/:id`.
 
@@ -817,12 +817,13 @@ npx.cmd sloc src
 
 ## 3. Despliegue en Vercel y auditoría con Lighthouse
 
-Desplegamos la aplicación en **Vercel** vinculando nuestro proyecto mediante Vercel CLI. La aplicación quedó publicada y funcionando en tiempo real en los siguientes enlaces:
+Desplegamos la aplicación en **Vercel** vinculando nuestro proyecto mediante Vercel CLI. La aplicación quedó publicada y funcionando en tiempo real en los siguientes enlaces públicos:
 
-- **URL principal de producción:** [https://bcy-gestor-tareas-vue.vercel.app](https://bcy-gestor-tareas-vue.vercel.app)
-- **URL de despliegue en Vercel:** [https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas](https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas)
+- **URL principal de producción (Alias):** [https://bcy-gestor-tareas-vue.vercel.app/tareas](https://bcy-gestor-tareas-vue.vercel.app/tareas)
+- **URL directa del despliegue en Vercel:** [https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas](https://bcy-gestor-tareas-kd5k24zry-michael-b6ba.vercel.app/tareas)
+- **Endpoint de la API en la nube (MockAPI):** [https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas](https://6af0c20a11a6aa866e7fbf30.mockapi.io/api/v1/tareas)
 
-Una vez publicada, abrimos la aplicación desplegada y ejecutamos la auditoría de **Lighthouse** desde las herramientas de desarrollador de Google Chrome para medir el rendimiento real.
+Una vez publicada con las 12 tareas cargadas, abrimos la aplicación desplegada y ejecutamos la auditoría de **Lighthouse** desde las herramientas de desarrollador de Google Chrome para medir el rendimiento real.
 
 ### Evidencia de Lighthouse en producción
 
@@ -843,14 +844,15 @@ En la siguiente tabla se resumen todas las mediciones obtenidas de nuestra aplic
 | **Tamaño del JS (`dist/assets/*.js`)** | 103.36 kB (gzip: 39.85 kB) | Incluye Vue 3, Vue Router, Pinia y lógica de la app |
 | **Tamaño total del build (`dist/`)** | 105.86 kB (gzip: 41.01 kB) | Peso total descargado por el navegador |
 | **Pruebas unitarias (Vitest)** | 3 passed (1.25 s) | 100% de pruebas aprobadas en `App.spec.js` |
-| **Lighthouse - Performance** | 99 / 100 | Carga casi instantánea en producción sobre Vercel |
+| **Lighthouse - Performance** | 99 / 100 | Carga rápida en producción sobre Vercel con las 12 tareas |
 | **Lighthouse - Accessibility** | 87 / 100 | Botones, formularios y estructura accesible |
 | **Lighthouse - Best Practices** | 100 / 100 | Uso de HTTPS y buenas prácticas de desarrollo web |
 | **Lighthouse - SEO** | 45 / 100 | Aplicación SPA enfocada en gestión interna de tareas |
 
 # Declaración de uso de Inteligencia Artificial
 
-Durante el desarrollo de este trabajo grupal nos apoyamos en herramientas de Inteligencia Artificial (ChatGPT y Gemini) como soporte de consulta y depuración:
+Durante el desarrollo de este trabajo grupal nos apoyamos en herramientas de Inteligencia Artificial como soporte de consulta, síntesis documental y depuración técnica:
 
-- **Consultas realizadas:** resolución del error de asignación (`==` por `=`) en el ejercicio de reactividad, solución al error de carga de módulos de Vitest (`ERR_MODULE_NOT_FOUND`), uso de `stubs` para `RouterLink` en las pruebas unitarias, configuración de la variable de entorno `VITE_API_URL` con MockAPI y reglas de redirección para el despliegue en Vercel.
-- **Revisión y validación:** todo el código sugerido fue probado, adaptado a los nombres de nuestras variables y componentes, ejecutado en nuestras computadoras y verificado mediante pruebas locales y en producción antes de subirlo al repositorio.
+- **NotebookLM (Google):** Utilizado para estructurar y sintetizar el material bibliográfico de los bloques de investigación a partir de la documentación oficial de Vue 3, Vite, Pinia, Vue Router y Vitest, facilitando la organización conceptual del informe.
+- **ChatGPT y Gemini (Google):** Empleados como soporte técnico para la depuración de código: resolución del error de asignación (`==` por `=`) en el ejercicio de reactividad, solución al error de carga de módulos de Vitest (`ERR_MODULE_NOT_FOUND`), uso de `stubs` para `RouterLink` en las pruebas unitarias, configuración de la variable de entorno `VITE_API_URL` con MockAPI y reglas de redirección (`vercel.json` y `_redirects`) para el despliegue en Vercel.
+- **Revisión y validación humana:** Todo el material resumido y el código sugerido fueron revisados, adaptados a los nombres de nuestras variables y componentes, ejecutados en nuestras computadoras y verificados mediante pruebas locales y en producción antes de subirlos al repositorio.
