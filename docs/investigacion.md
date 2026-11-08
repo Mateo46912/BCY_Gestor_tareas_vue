@@ -461,3 +461,268 @@ Durante el desarrollo del ejercicio no se presentaron errores importantes a toma
 [Documentación de JSON Server](https://github.com/typicode/json-server)
 
 [Documentación oficial de Vue — Renderizado condicional](https://vuejs.org/guide/essentials/conditional.html)
+
+
+# Implementación de los conceptos de los bloques 4 y 5 en la aplicación grupal
+
+## Introducción
+
+Después de realizar la investigación se agregaron estas funciónalidades aprendidas a la aplicación.
+
+La aplicación ya tenía creada la interfaz principal y sus componentes, pero aún se trabajaba con un arreglo estático guardado en la vista de tareas, no se tenía la API, además los botónes para guardar, eliminar y demás aún no funciónaban.
+
+En esta parte del informe se documentan los cambios agregados, los cuales serían el API REST que da las tareas a un store con Pinia, para que varias vistas o componentes accedan a la lista y se puedan realizar las operaciónes de crear, eliminar y demás. A parte de esto se agregaron las rutas para acceder a la lista entera o a una tarea en específico.
+
+## 1. Implementación del store compartido con Pinia
+
+Para administrar las tareas con sus datos se creó el archivo `src/stores/datos_tareas.js`, donde utilizamos la función `defineStore()` de Pinia.
+
+Dentro del archivo se declaró la variable `tareas` la cual va a almacenar el arreglo de tareas que vamos a obtener directamente desde la API, esta variable era reactiva por lo que se actualiza la vista sola, además se declararon las variables `EstaCargando` y `error` para manejar errores y el estado de carga para una mejor experiencia de usuario.
+
+De igual forma en esta clase se agregaron las funciónes necesarias para las operaciónes CRUD, básicamente agregar, eliminar, editar y cambiar el estado, esto mediante JSON Server, que es el que modifica directamente `db.json`, que es nuestra mini base de datos de tareas.
+
+Desde las otras vistas como la de tareas y la de detalle de tareas se usará `TareasCompartidasStore()` para poder utilizar todas las funciónes del store que acabamos de crear y así conectar la interfaz con nuestra API.
+
+### Evidencia del código de Pinia
+
+En la captura se observa la clase store con las variables y las funciónes para obtener los datos de la API de manera general y por el ID de una tarea
+
+![Código del store de Pinia](capturas/Evidencia_Codigo_Store_Pinia.png)
+
+## 2. Creación y conexión de la API REST
+
+Para trabajar con datos reales obtenidos de una API, usamos JSON Server, que permite crear una API REST local utilizando un archivo JSON.
+
+Para ello se crea el archivo `db.json` en la carpeta principal del proyecto y se escriben en él varias tareas relacionadas con la materia.
+
+Cada tarea tiene tres atributos, podría decirse que son:
+
+- `id`: identificador de la tarea
+
+- `title`: nombre de la tarea.
+
+- `completed`: sirve para ver si está completada (`true`) o pendiente (`false`).
+
+Para iniciar el servidor con JSON Server utilizamos el comando:
+```powershell
+npx.cmd json-server db.json
+```
+
+Después de iniciar el servidor, se pueden consultar las tareas en JSON desde: `http://localhost:3000/tareas`.
+
+En el store de Pinia creamos la función `ObtenerLasTareasAPI()`, usamos un `fetch()` y mediante una solicitud de `GET` a JSON Server obtenemos las tareas del archivo JSON.
+
+### Evidencia de la API REST
+
+En la captura se observan las tareas que JSON Server devuelve al hacer la solicitud con fetch en formato JSON.
+
+![Tareas obtenidas desde JSON Server](capturas/Evidencia_API_Tareas_Json.png)
+
+### Evidencia del listado de tareas
+
+En la captura se observa cómo al conectar ya la API con la aplicación directamente en la vista de tareas, ya se observan las tareas obtenidas de la API.
+
+![Listado general de tareas de la aplicación](capturas/Evidencia_APP_lista_Tareas.png)
+
+## 3. Implementación de las operaciónes CRUD
+
+Para administrar todas las tareas según lo solicitado, se usan las operaciónes CRUD las cuales fueron programadas en la clase `datos_tareas.js` que es la clase de nuestro store ahí se programan y se envían con solicitudes HTTP a la API.
+
+Como los componentes ya tenían conectados los botónes, solamente se conectó el evento del botón con las funciónes del store, así al darle click al botón se actualizaba `db.json` directamente.
+
+| Operación | Método HTTP | Función de Pinia |
+|---|---|---|
+| Consultar tareas | GET | `ObtenerLasTareasAPI()` |
+| Crear tarea | POST | `CrearTareaNueva()` |
+| Editar título | PATCH | `ActualizarTareasPorID()` |
+| Cambiar estado | PATCH | `CambiarEstadoEntregaPorID()` |
+| Eliminar tarea | DELETE | `EliminarTareaPorID()` |
+
+Después de cada operación realizada, se ejecuta `ObtenerLasTareasAPI()` para refrescar el listado general de tareas y obtener los datos de JSON Server y que se actualice la vista.
+
+### 3.1. Crear una tarea
+
+Para crear una tarea se usa el formulario que ya venía creado.
+
+Cuando el usuario escribe un título para la tarea y presiona **Agregar tarea**, el formulario crea el evento con los datos de la nueva tarea y los envía. De esta manera en la vista principal se recibe este evento y se lo envía al store con el método `CrearTareaNueva()`, para que JSON Server guarde los datos.
+
+Esta función utiliza un `fetch()` con el método `POST` y envía los datos a JSON Server, la cual los guarda y genera un ID para cada tarea nueva, después actualiza la lista de tareas principal.
+
+**Evidencia de la creación de una tarea**
+
+En la captura se observa la nueva tarea creada en el listado.
+
+![Tarea creada en la aplicación](capturas/Evidencia_Tarea_Creada_APP.png)
+
+### 3.2. Editar una tarea
+
+Para editar una tarea se usa el botón **Editar** que ya estaba implementado.
+
+Cuando se elige una tarea para editar, se realiza el proceso programado anteriormente y se coloca en el formulario el título actual y un botón **Guardar cambios** y otro **Cancelar**, cuando se elige guardar cambios, se envía el nuevo título y el ID de la tarea.
+
+En la vista principal se reciben los datos y se envían al método `ActualizarTareasPorID()` el cual realiza una solicitud `PATCH` a JSON Server para cambiar únicamente la propiedad `title` de la tarea y mantiene los demás elementos el ID y el estado, de igual forma al terminar se actualiza la lista y se ve el cambio.
+
+**Evidencia de la edición de una tarea**
+
+Se ve en la captura el formulario para editar y el resultado de la tarea editada.
+
+![Edición de una tarea](capturas/Evidencia_Editar_Tarea.png)
+
+### 3.3. Cambiar el estado de una tarea
+
+Se implementa usando la funciónalidad del botón que ya estaba creada.
+
+Este botón nos devuelve el ID de la tarea y el valor del campo, que en este caso ya es el contrario, es decir, el que se debe enviar a la API, el campo es el de `completed`.
+
+Desde la vista principal usamos `CambiarEstadoEntregaPorID()` y le enviamos los datos al store, Esta función envía una solicitud `PATCH` a JSON Server para cambiar solo el estado de la tarea, de igual forma se vuelve a actualizar el listado de tareas y se verifica visualmente el cambio.
+
+**Evidencia del cambio de estado**
+
+Se puede observar la tarea antes y después del cambio de estado.
+
+![Cambio de estado de una tarea](capturas/Evidencia_Cambiar_Estado_Tarea.png)
+
+### 3.4. Eliminar una tarea
+
+Para eliminar una tarea utilizamos el botón **Eliminar**, el cual envía el ID de la tarea a eliminar.
+
+Desde la vista principal usamos a `EliminarTareaPorID()` función del store, esta función utiliza el método `DELETE` junto con el ID obtenido para decirle a JSON Server cuál es la tarea que debe eliminar, de igual forma se vuelve a actualizar el listado de tareas y se observa que ya no está la tarea eliminada.
+
+**Evidencia de la eliminación de una tarea**
+
+Se puede observar la tarea antes y después de eliminar una tarea.
+
+![Eliminación de una tarea](capturas/Evidencia_Tarea_Eliminada.png)
+
+### 3.5. Código de las solicitudes HTTP
+
+Para realizar todas las operaciónes mostradas se hacen las solicitudes a la API usando `fetch()` con los métodos `POST`, `PATCH` y `DELETE`.
+
+En las solicitudes que envían nueva información se usa `JSON.stringify()` para convertir los datos de JavaScript a formato JSON.
+
+**Evidencia del código CRUD**
+
+En la captura se observan todas las funciónes que realizan las solicitudes HTTP desde la clase del store.
+
+![Código de las solicitudes HTTP para el CRUD](capturas/Evidencia_Solicitudes_API_CRUD.png)
+
+## 4. Filtros de tareas
+
+La aplicación ya contaba con un componente para seleccionar las tareas según su estado.
+
+Una vez se conectó con Pinia y con la API se mostraron las tareas directamente de la API.
+
+Se usa `computed()` junto con `filter()` para obtener solamente las tareas que cumplen la condición seleccionada.
+
+Las opciones disponibles son:
+
+- Todas: muestra todas las tareas.
+
+- Pendientes: muestra las tareas que tienen `completed` en `false`.
+
+- Completadas: muestra las tareas que tienen `completed` en `true`.
+
+### Evidencia de los filtros
+
+En la captura se puede ver el filtro funciónando mostrando las tareas completadas o las pendientes.
+
+![Filtros de tareas pendientes y completadas](capturas/Evidencia_Filtros_tareas.png)
+
+## 5. Implementación de las rutas con Vue Router
+
+Para cumplir con lo solicitado se implementaron dos rutas para la lista completa de tareas y para cada tarea.
+
+La aplicación ya tenía instalado y registrado el enrutador, solamente se agregó la ruta y la nueva vista para los detalles de las tareas.
+
+En el archivo `src/router/index.js` se configuraron las siguientes rutas:
+
+- `/`: redirige automáticamente a `/tareas`.
+
+- `/tareas`: muestra la vista principal con la lista de tareas.
+
+- `/tareas/:id`: muestra los detalles de una tarea específica por su ID.
+
+También agregamos un enlace llamado **Ver detalles** dentro de cada tarea.
+
+Este enlace construye una URL que es la URL general más el ID de la tarea.
+
+### Evidencia de la configuración de rutas
+
+En la captura se ve cómo configuramos las rutas usando Vue Router.
+
+![Configuración de las rutas de Vue Router](capturas/Evidencia_Rutas_Codigo.png)
+
+### 5.1. Vista de detalle de una tarea
+
+Para mostrar la información de cada tarea creamos el componente `DetalleTareaEspecifica.vue`, en esta vista se usa `useRoute()` para obtener el ID directo de la dirección del navegador.
+
+Después usamos la función `obtenerTareaPorID()` de la clase store para así obtener los datos solo de esa tarea.
+
+La vista muestra el ID, título y estado de cada tarea y un enlace para volver al listado principal.
+
+**Evidencia de la vista de detalle**
+
+En la captura se observa los detalles de una tarea según su ID.
+
+![Vista de detalle de una tarea específica](capturas/Evidencia_Tarea_Especifica_ID.png)
+
+## 6. Uso del estado compartido entre las vistas
+
+Para aprovechar el estado compartido entre vistas creamos la función `obtenerTareaPorID()`, primero utilizamos `find()` para buscar la tarea dentro del arreglo que ya obtuvimos de la API.
+
+Si la tarea está disponible, devolvemos directamente su información, sin realizar otra solicitud a la API.
+
+En cambio, si no la encontramos en el arreglo, utilizamos `fetch()` para hacer la consulta JSON Server mediante el ID recibido.
+
+De esta forma aprovechamos el arreglo obtenido al inicio y si no está cargado hacemos la consulta a JSON Server.
+
+Así, tanto la vista principal como la vista de detalle pueden acceder al mismo store para trabajar con las tareas.
+
+## 7. Manejo de carga y errores
+
+Para controlar las solicitudes HTTP utilizamos `try/catch/finally`.
+
+Con `try` se consultan los datos y con `catch` capturamos los errores que pueden ocurrir. Finalmente, con `finally` actualizamos la variable `EstaCargando` para verificar si ya llegaron los datos.
+
+También en un if validamos `respuesta.ok` para detectar cuando la API devuelve un error HTTP.
+
+Durante las pruebas verificamos el funciónamiento de los mensajes de error en dos situaciones.
+
+### 7.1. Consultar una tarea inexistente
+
+Primero se intenta acceder a una tarea con un ID inexistente, la API no lo encuentra y nos indica que no existe la tarea.
+
+Esto es útil para que el usuario sepa qué pasa.
+
+**Evidencia de tarea inexistente**
+
+![Error al consultar una tarea inexistente](capturas/Evidencia_Tarea_Inexistente.png)
+
+### 7.2. Intentar consultar la API cuando está apagada
+
+Para esta prueba apagamos JSON Server, al no tener de dónde obtener las tareas, la aplicación muestra el mensaje de que no se puede conectar con la API.
+
+De esta forma el usuario sabe que está pasando.
+
+**Evidencia del error de conexión**
+
+![Error al consultar JSON Server apagado](capturas/Evidencia_API_Apagada.png)
+
+## 8. Compilación de la aplicación
+
+Después de implementar todas las funciónalidades se ejecuta el comando de Vite para tener la versión de la app para producción.
+```powershell
+npm.cmd run build
+```
+
+El comando procesó los archivos del proyecto y generó una carpeta llamada `dist`, que contiene los archivos preparados para publicar la aplicación.
+
+Con todo comprimido y sin errores según el resultado del comando, quedando lista la versión generada para la siguiente etapa del proyecto.
+
+### Evidencia de la compilación
+
+En la captura se muestra la salida del comando: `npm.cmd run build`.
+
+![Compilación correcta del proyecto con Vite](capturas/Evidencia_Proyecto_Compilado.png)
+
+Finalmente se implementaron de manera satisfactoria todos estos cambios y funciónalidades explicadas anteriormente. El proyecto está listo para la última fase de tests y el despliegue

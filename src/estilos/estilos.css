@@ -124,6 +124,7 @@ button:disabled {
 #detalles{
   color: var(--blanco);
   background-color: steelblue;
+  text-decoration: none;  
 }
 
 #detalles:hover{

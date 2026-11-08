@@ -2,8 +2,8 @@
   "tareas": [
     {
       "id": "1",
-      "title": "Practica - Estandares HTML",
-      "completed": false
+      "title": "Practica - Estandares HTML1",
+      "completed": true
     },
     {
       "id": "2",
@@ -59,6 +59,11 @@
       "id": "12",
       "title": "Realizar pruebas y publicar la aplicacion Vue",
       "completed": false
+    },
+    {
+      "title": "Tarea editada",
+      "completed": false,
+      "id": "-6Zhsj7fm0k"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
