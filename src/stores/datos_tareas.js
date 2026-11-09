@@ -25,7 +25,7 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
   }
 
   async function obtenerTareaPorID(id) {
-    const tareaLocal = tareas.value.find((t) => String(t.id) === String(id));
+    const tareaLocal = tareas.value.find((t) => t.id == id);
     if (tareaLocal) {
       return tareaLocal;
     }
@@ -61,28 +61,24 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
     }
   }
 
-  async function ActualizarTareasPorID(datos, tituloOpcional) {
+  async function ActualizarTareasPorID(datos) {
     error.value = "";
+
     try {
-      const id = typeof datos === "object" ? datos.id : datos;
-      const nuevoTitulo = typeof datos === "object" ? datos.title : tituloOpcional;
+      const tareaActual = tareas.value.find((t) => t.id == datos.id);
 
-      const tareaActual = tareas.value.find((t) => String(t.id) === String(id));
-      const estadoActual =
-        datos && typeof datos === "object" && datos.completed !== undefined
-          ? Boolean(datos.completed)
-          : tareaActual
-          ? Boolean(tareaActual.completed)
-          : false;
+      if (!tareaActual) {
+        throw new Error("No se encontró la tarea");
+      }
 
-      const respuesta = await fetch(`${API_BASE}/tareas/${id}`, {
+      const respuesta = await fetch(`${API_BASE}/tareas/${datos.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: nuevoTitulo,
-          completed: estadoActual,
+          title: datos.title,
+          completed: tareaActual.completed,
         }),
       });
 
@@ -96,24 +92,24 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
     }
   }
 
-  async function CambiarEstadoEntregaPorID(datos, estadoOpcional) {
+  async function CambiarEstadoEntregaPorID(datos) {
     error.value = "";
+
     try {
-      const id = typeof datos === "object" ? datos.id : datos;
-      const nuevoEstado =
-        typeof datos === "object" ? datos.completed : estadoOpcional;
+      const tareaActual = tareas.value.find((t) => t.id == datos.id);
 
-      const tareaActual = tareas.value.find((t) => String(t.id) === String(id));
-      const tituloActual = tareaActual ? tareaActual.title : "";
+      if (!tareaActual) {
+        throw new Error("No se encontró la tarea");
+      }
 
-      const respuesta = await fetch(`${API_BASE}/tareas/${id}`, {
+      const respuesta = await fetch(`${API_BASE}/tareas/${datos.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          title: tituloActual,
-          completed: Boolean(nuevoEstado),
+          title: tareaActual.title,
+          completed: datos.completed,
         }),
       });
 
@@ -127,11 +123,10 @@ export const TareasCompartidasStore = defineStore("tareas", () => {
     }
   }
 
-  async function EliminarTareaPorID(datos) {
+  async function EliminarTareaPorID(id) {
     error.value = "";
-    try {
-      const id = typeof datos === "object" ? datos.id : datos;
 
+    try {
       const respuesta = await fetch(`${API_BASE}/tareas/${id}`, {
         method: "DELETE",
       });
