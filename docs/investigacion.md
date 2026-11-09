@@ -785,7 +785,7 @@ Para solucionarlo creamos una API REST en la nube usando **MockAPI.io** con el r
 
 ```javascript
 const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:3000";
-
+```
 ### Funcionamiento entre entorno local y nube (`.env`)
 
 En la raíz del proyecto se incluyó el archivo `.env` apuntando a MockAPI:
